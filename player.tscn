@@ -1,0 +1,73 @@
+[gd_scene load_steps=6 format=3 uid="uid://brvla8l7lphvg"]
+
+[ext_resource type="Texture2D" uid="uid://ykuvpgr15svx" path="res://onigokko.png" id="1_mto3x"]
+[ext_resource type="Script" path="res://player.gd" id="1_nok4e"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_pmav3"]
+radius = 0.3
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_hnf36"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:demon")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:_player_info")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath("Head:rotation")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qs1ue"]
+size = Vector3(0.5, 0.5, 0.5)
+
+[node name="Player" type="CharacterBody3D"]
+collision_layer = 2
+script = ExtResource("1_nok4e")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+pixel_size = 0.04
+billboard = 2
+texture_filter = 0
+texture = ExtResource("1_mto3x")
+region_enabled = true
+region_rect = Rect2(32, 16, 16, 16)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00333649, -0.00330316, 0.000716925)
+shape = SubResource("SphereShape3D_pmav3")
+
+[node name="Head" type="Marker3D" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+
+[node name="Torchlight" type="SpotLight3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 0.996195, 0.0871557, 0, -0.0871557, 0.996195, 0, 0, 0)
+spot_angle = 20.0
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_hnf36")
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+sorting_offset = 1.0
+billboard = 2
+text = "Name"
+
+[node name="Hitbox" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox"]
+shape = SubResource("BoxShape3D_qs1ue")
+
+[node name="ImmuneTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
+[connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]
+[connection signal="timeout" from="ImmuneTimer" to="." method="_on_immune_timer_timeout"]

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CostumeResource" load_steps=3 format=3 uid="uid://cm1f1oyao6i6b"]
+
+[ext_resource type="Script" path="res://costume.gd" id="1_negjs"]
+[ext_resource type="Texture2D" uid="uid://b0ul0p6spa5kw" path="res://runner.png" id="2_hv5nf"]
+
+[resource]
+script = ExtResource("1_negjs")
+demon = false
+texture = ExtResource("2_hv5nf")
+front_rect = Rect2(0, 0, 16, 16)
+right_rect = Rect2(0, 16, 16, 16)
+back_rect = Rect2(0, 32, 16, 16)

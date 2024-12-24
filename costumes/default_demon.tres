@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="CostumeResource" load_steps=3 format=3 uid="uid://crjuyanawf4on"]
+
+[ext_resource type="Script" path="res://costume.gd" id="1_6bo3r"]
+[ext_resource type="Texture2D" uid="uid://b4jnanhswyy12" path="res://onisprites.png" id="2_5x4jc"]
+
+[resource]
+script = ExtResource("1_6bo3r")
+demon = true
+texture = ExtResource("2_5x4jc")
+front_rect = Rect2(0, 0, 32, 32)
+right_rect = Rect2(0, 32, 32, 32)
+back_rect = Rect2(0, 64, 32, 32)
