@@ -125,7 +125,6 @@ func sync_make_demon(new_id):
 			demon_name = Network.players[demon_id].name
 			demon_color = Network.players[demon_id].color
 			
-		print("%s became the Demon!" % demon_id)
 		hud.show_message("[color=%s]%s[/color] is the DEMON!" % [demon_color.to_html(false),demon_name])
 
 

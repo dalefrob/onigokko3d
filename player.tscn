@@ -1,22 +1,23 @@
-[gd_scene load_steps=6 format=3 uid="uid://brvla8l7lphvg"]
+[gd_scene load_steps=7 format=3 uid="uid://brvla8l7lphvg"]
 
 [ext_resource type="Texture2D" uid="uid://ykuvpgr15svx" path="res://onigokko.png" id="1_mto3x"]
 [ext_resource type="Script" path="res://player.gd" id="1_nok4e"]
+[ext_resource type="PackedScene" uid="uid://0p1rk8ig07os" path="res://demon_tongue.tscn" id="3_qta7u"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_pmav3"]
 radius = 0.3
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_hnf36"]
-properties/0/path = NodePath(".:position")
+properties/0/path = NodePath(".:demon")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath(".:demon")
+properties/1/path = NodePath(".:_player_info")
 properties/1/spawn = true
-properties/1/replication_mode = 1
-properties/2/path = NodePath(".:_player_info")
+properties/1/replication_mode = 2
+properties/2/path = NodePath(".:sync_position")
 properties/2/spawn = true
-properties/2/replication_mode = 2
-properties/3/path = NodePath("Head:rotation")
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:sync_rotation")
 properties/3/spawn = true
 properties/3/replication_mode = 1
 
@@ -40,19 +41,22 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00333649, -0.00330316, 0.0
 shape = SubResource("SphereShape3D_pmav3")
 
 [node name="Head" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Head"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 
 [node name="Torchlight" type="SpotLight3D" parent="Head"]
 transform = Transform3D(1, 0, 0, 0, 0.996195, 0.0871557, 0, -0.0871557, 0.996195, 0, 0, 0)
 spot_angle = 20.0
 
+[node name="DemonTongue" parent="Head" instance=ExtResource("3_qta7u")]
+visible = false
+
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_hnf36")
 
 [node name="Label3D" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
 sorting_offset = 1.0
 billboard = 2
 text = "Name"

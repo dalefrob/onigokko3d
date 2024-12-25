@@ -1,6 +1,10 @@
 extends CharacterBody3D
 class_name Player
 
+# Client only vars
+@export var sync_position : Vector3
+@export var sync_rotation : Vector3
+
 var peer_id = 0
 
 @export var _player_info = Network.player_info:
@@ -25,10 +29,11 @@ var costume : CostumeResource:
 @onready var namelabel : Label3D = $Label3D
 @onready var hitbox : Area3D = $Hitbox
 @onready var immune_timer : Timer = $ImmuneTimer
+@onready var demon_tongue := $Head/DemonTongue
 
 # Movements
 var speed = 5.0
-var JUMP_VELOCITY = 4.5
+var jump_velocity = 4.5
 
 # Attributes
 @export var tag_immune = false:
@@ -54,19 +59,15 @@ func _setup_runner():
 
 
 func _setup_demon():
-	namelabel.text = "DEMON"
 	namelabel.modulate = Color.DEEP_PINK
 	sprite.modulate = Color.WHITE
 	speed = 5.0
 
 func _ready() -> void:
-	if !is_multiplayer_authority():
-		set_physics_process(false)
-		return
+	if is_multiplayer_authority():
+		camera.make_current()
 	
-	# Code beyond here is local
 	_setup_runner()
-	camera.make_current()
 
 
 func _process(delta: float) -> void:
@@ -75,6 +76,10 @@ func _process(delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if !is_multiplayer_authority():
+		interpolate_movement(delta)
+		return
+	
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
@@ -82,7 +87,11 @@ func _physics_process(delta: float) -> void:
 	# Handle jump.
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		jump.rpc()
-
+	
+	# Handle shoot.
+	if Input.is_action_just_pressed("shoot"):
+		shoot.rpc()
+	
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var input_dir := Input.get_vector("strafe_left", "strafe_right", "move_forward", "move_backward")
@@ -95,10 +104,27 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, speed)
 
 	move_and_slide()
+	# Update sync values to send
+	sync_position = position
+	sync_rotation = head.rotation
+
+
+# Move towards the last position
+func interpolate_movement(delta : float):
+	position = position.move_toward(sync_position, delta * speed * 2)
+	head.rotation = head.rotation.slerp(sync_rotation, delta * speed * 2)
+
 
 @rpc("authority", "call_local", "unreliable")
 func jump():
-	velocity.y = JUMP_VELOCITY
+	velocity.y = jump_velocity
+
+
+@rpc("authority", "call_local", "reliable")
+func shoot():
+	if demon:
+		print("%s shoots tongue" % player_name)
+		demon_tongue.shoot()
 
 
 func _input(event: InputEvent) -> void:
