@@ -52,6 +52,7 @@ var jump_velocity = 4.5
 
 
 func _setup_runner():
+	namelabel.show()
 	namelabel.text = _player_info.name
 	namelabel.modulate = Color.WHITE
 	sprite.modulate = _player_info.color
@@ -59,7 +60,7 @@ func _setup_runner():
 
 
 func _setup_demon():
-	namelabel.modulate = Color.DEEP_PINK
+	namelabel.hide()
 	sprite.modulate = Color.WHITE
 	speed = 5.0
 
@@ -112,7 +113,11 @@ func _physics_process(delta: float) -> void:
 # Move towards the last position
 func interpolate_movement(delta : float):
 	position = position.move_toward(sync_position, delta * speed * 2)
-	head.rotation = head.rotation.slerp(sync_rotation, delta * speed * 2)
+	var hrot : Vector3 = head.rotation
+	hrot.y = lerp_angle(hrot.y, sync_rotation.y, delta * speed * 2)
+	hrot.x = sync_rotation.x
+	hrot.z = sync_rotation.z
+	head.rotation = hrot
 
 
 @rpc("authority", "call_local", "unreliable")
@@ -128,6 +133,9 @@ func shoot():
 
 
 func _input(event: InputEvent) -> void:
+	if !is_multiplayer_authority():
+		return
+	
 	# ESC
 	var key_event = event as InputEventKey
 	if key_event:
@@ -146,6 +154,8 @@ func _input(event: InputEvent) -> void:
 
 
 func update_sprite():
+	sprite.shaded = !demon_tongue.is_attacking
+		
 	# set the sprite direction based on the way the player is looking
 	var curr_camera = get_viewport().get_camera_3d()
 	var dot_a : float = curr_camera.global_basis.z.dot(head.global_basis.z)

@@ -1,15 +1,16 @@
-[gd_scene load_steps=8 format=3 uid="uid://de87htjmchopr"]
+[gd_scene load_steps=9 format=3 uid="uid://de87htjmchopr"]
 
 [ext_resource type="Script" path="res://game.gd" id="1_14ux5"]
-[ext_resource type="Material" uid="uid://bu1ctyi2eymmv" path="res://floor_material.tres" id="1_bsk1b"]
-[ext_resource type="Material" uid="uid://drr2xrx0hb8t7" path="res://wall_material.tres" id="2_hjlm1"]
+[ext_resource type="Material" uid="uid://bu1ctyi2eymmv" path="res://materials/floor_material.tres" id="1_bsk1b"]
+[ext_resource type="Material" uid="uid://drr2xrx0hb8t7" path="res://materials/wall_material.tres" id="2_hjlm1"]
 [ext_resource type="PackedScene" uid="uid://brvla8l7lphvg" path="res://player.tscn" id="2_tnhop"]
 [ext_resource type="PackedScene" uid="uid://bw3udoe1p7i8g" path="res://lobby_ui.tscn" id="5_w1374"]
+[ext_resource type="Texture2D" uid="uid://6hf187xnu8oa" path="res://hhouse_walllamp.png" id="5_wlqis"]
 [ext_resource type="Script" path="res://hud.gd" id="6_ohvh3"]
 
 [sub_resource type="Environment" id="Environment_uqe0p"]
 ambient_light_source = 2
-ambient_light_color = Color(0.242397, 0.199033, 0.259272, 1)
+ambient_light_color = Color(0.13497, 0.106851, 0.145906, 1)
 
 [node name="Game" type="Node3D" groups=["game"]]
 script = ExtResource("1_14ux5")
@@ -66,19 +67,20 @@ use_collision = true
 size = Vector3(19, 2.5, 0.5)
 material = ExtResource("2_hjlm1")
 
-[node name="SpotLight3D" type="SpotLight3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 2, 3.7)
-spot_range = 10.0
+[node name="SpotLight3D" type="OmniLight3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 2, 3.53461)
+light_color = Color(0.981176, 0.930106, 0.542119, 1)
+light_energy = 3.0
 
-[node name="SpotLight3D3" type="SpotLight3D" parent="Map"]
-transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 2, 2, -5.8)
-light_color = Color(0, 1, 0.109804, 1)
-spot_range = 10.0
+[node name="SpotLight3D3" type="OmniLight3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, -5.94444)
+light_color = Color(0.981176, 0.930106, 0.542119, 1)
+light_energy = 3.0
 
-[node name="SpotLight3D2" type="SpotLight3D" parent="Map"]
-transform = Transform3D(-1, 7.57104e-08, -4.37114e-08, 0, 0.5, 0.866025, 8.74228e-08, 0.866025, -0.5, 0, 2, -5.2)
-light_color = Color(0.795881, 0.723534, 0.110628, 1)
-spot_range = 10.0
+[node name="SpotLight3D2" type="OmniLight3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.23514, 1.83534, -0.256562)
+light_color = Color(0.981176, 0.930106, 0.542119, 1)
+light_energy = 3.0
 
 [node name="SpawnPoint" type="Marker3D" parent="Map" groups=["spawnpoint"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -91,6 +93,30 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 1, -10.5)
 
 [node name="SpawnPoint4" type="Marker3D" parent="Map" groups=["spawnpoint"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 1, -10.5)
+
+[node name="Sprite3D" type="Sprite3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0134364, 1.80653, -5.11177)
+visible = false
+pixel_size = 0.02
+billboard = 2
+texture_filter = 0
+texture = ExtResource("5_wlqis")
+
+[node name="Sprite3D2" type="Sprite3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.01328, 1.80653, -5.87284)
+visible = false
+pixel_size = 0.02
+billboard = 2
+texture_filter = 0
+texture = ExtResource("5_wlqis")
+
+[node name="Sprite3D3" type="Sprite3D" parent="Map"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.04803, 1.80653, 3.58825)
+visible = false
+pixel_size = 0.02
+billboard = 2
+texture_filter = 0
+texture = ExtResource("5_wlqis")
 
 [node name="ObserveCamera" type="Camera3D" parent="."]
 transform = Transform3D(0.882948, -0.234736, 0.406574, 0, 0.866025, 0.5, -0.469472, -0.441474, 0.764655, 7.64705, 5.17268, 6.12841)

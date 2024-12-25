@@ -32,8 +32,13 @@ func change_state(new_state):
 var _t : float = 0.0
 var _tongue_extension_vector : Vector3
 
+var is_attacking : bool:
+	get: return current_state != STATE_IDLE
+
+
 func _ready() -> void:
-	pass
+	if is_multiplayer_authority():
+		sprite.modulate.a = 0.5
 
 
 func shoot():

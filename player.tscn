@@ -31,6 +31,7 @@ script = ExtResource("1_nok4e")
 [node name="Sprite3D" type="Sprite3D" parent="."]
 pixel_size = 0.04
 billboard = 2
+shaded = true
 texture_filter = 0
 texture = ExtResource("1_mto3x")
 region_enabled = true
@@ -50,6 +51,7 @@ transform = Transform3D(1, 0, 0, 0, 0.996195, 0.0871557, 0, -0.0871557, 0.996195
 spot_angle = 20.0
 
 [node name="DemonTongue" parent="Head" instance=ExtResource("3_qta7u")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 visible = false
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
