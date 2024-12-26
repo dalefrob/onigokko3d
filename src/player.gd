@@ -1,6 +1,12 @@
 extends CharacterBody3D
 class_name Player
 
+const MAX_RUNNER_SPEED = 3.5
+const MAX_SPRINT_SPEED = 7.0
+const MAX_DEMON_SPEED = 3.0
+
+var _game_ref : Game
+
 # Client only vars
 @export var sync_position : Vector3
 @export var sync_rotation : Vector3
@@ -28,10 +34,14 @@ var costume : CostumeResource:
 @onready var camera : Camera3D = $Head/Camera3D
 @onready var namelabel : Label3D = $Label3D
 @onready var hitbox : Area3D = $Hitbox
+
 @onready var immune_timer : Timer = $ImmuneTimer
 @onready var demon_tongue := $Head/DemonTongue
 
-# Movements
+@onready var hud : HUD = $HUD
+
+# Vars
+var energy = 100.0
 var speed = 5.0
 var jump_velocity = 4.5
 
@@ -52,23 +62,36 @@ var jump_velocity = 4.5
 
 
 func _setup_runner():
+	if is_multiplayer_authority():
+		hud.energy_bar.show()
 	namelabel.show()
 	namelabel.text = _player_info.name
 	namelabel.modulate = Color.WHITE
 	sprite.modulate = _player_info.color
-	speed = 4.8
 
 
 func _setup_demon():
+	hud.energy_bar.hide()
 	namelabel.hide()
 	sprite.modulate = Color.WHITE
-	speed = 5.0
+
 
 func _ready() -> void:
+	_game_ref = get_tree().get_first_node_in_group("game")
+	
 	if is_multiplayer_authority():
+		_game_ref.game_announcement.connect(on_game_announcement)
+		hud.show()
 		camera.make_current()
 	
 	_setup_runner()
+
+
+
+#region UICallbacks
+func on_game_announcement(message : String):
+	hud.show_message(message)
+#endregion
 
 
 func _process(delta: float) -> void:
@@ -89,9 +112,17 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		jump.rpc()
 	
-	# Handle shoot.
-	if Input.is_action_just_pressed("shoot"):
+	speed = MAX_DEMON_SPEED if demon else MAX_RUNNER_SPEED
+	
+	# Handle skills.
+	if Input.is_action_pressed("primary") and !demon:
+		if energy > 1:
+			sprint()
+	elif Input.is_action_just_pressed("primary") and demon:
 		shoot.rpc()
+	else:
+		if energy < 100.0:
+			energy += 0.25
 	
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
@@ -128,8 +159,13 @@ func jump():
 @rpc("authority", "call_local", "reliable")
 func shoot():
 	if demon:
-		print("%s shoots tongue" % player_name)
 		demon_tongue.shoot()
+
+
+func sprint():
+	if energy > 0:
+		energy -= 1
+		speed = MAX_SPRINT_SPEED
 
 
 func _input(event: InputEvent) -> void:

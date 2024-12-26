@@ -9,11 +9,12 @@ var picked_color : Color
 
 var default_names = [
 	"Oribon",
-	"Elad",
+	"Bloke",
 	"Mannah",
 	"Cupmang",
 	"Gojira",
-	"Darth Bonsuke"
+	"Darth Bonsuke",
+	"Elephix"
 ]
 
 var default_colors = [
@@ -27,6 +28,7 @@ var default_colors = [
 ]
 
 func _ready() -> void:
+	randomize()
 	player_name_edit.text = default_names.pick_random()
 	picked_color = color_choices.pick_random().color
 	for color_rect in color_choices:

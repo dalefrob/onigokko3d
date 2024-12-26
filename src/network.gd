@@ -2,6 +2,7 @@ extends Node
 # Autoload named Lobby
 
 # These signals can be connected to by a UI lobby scene or the game scene.
+signal server_created
 signal player_connected(peer_id, player_info)
 signal player_disconnected(peer_id)
 signal server_disconnected
@@ -58,6 +59,7 @@ func create_game():
 	multiplayer.multiplayer_peer = peer
 	DisplayServer.window_set_title("Server (1)")
 	
+	server_created.emit()
 	# players[1] = player_info
 	# player_connected.emit(1, player_info) NOTE Why emit when no players are connected yet?
 

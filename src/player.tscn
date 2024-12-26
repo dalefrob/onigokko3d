@@ -1,8 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://brvla8l7lphvg"]
+[gd_scene load_steps=9 format=3 uid="uid://brvla8l7lphvg"]
 
-[ext_resource type="Texture2D" uid="uid://ykuvpgr15svx" path="res://sprites/onigokko.png" id="1_mto3x"]
 [ext_resource type="Script" path="res://src/player.gd" id="1_nok4e"]
+[ext_resource type="Texture2D" uid="uid://b0ul0p6spa5kw" path="res://sprites/runner.png" id="2_yy6vk"]
 [ext_resource type="PackedScene" uid="uid://0p1rk8ig07os" path="res://src/demon_tongue.tscn" id="3_qta7u"]
+[ext_resource type="Script" path="res://src/hud.gd" id="4_rb8ji"]
+[ext_resource type="Texture2D" uid="uid://bure181a2qul8" path="res://sprites/staminabar.png" id="5_gyhn1"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_pmav3"]
 radius = 0.3
@@ -33,9 +35,9 @@ pixel_size = 0.04
 billboard = 2
 shaded = true
 texture_filter = 0
-texture = ExtResource("1_mto3x")
+texture = ExtResource("2_yy6vk")
 region_enabled = true
-region_rect = Rect2(32, 16, 16, 16)
+region_rect = Rect2(0, 0, 16, 16)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00333649, -0.00330316, 0.000716925)
@@ -74,6 +76,46 @@ shape = SubResource("BoxShape3D_qs1ue")
 [node name="ImmuneTimer" type="Timer" parent="."]
 wait_time = 3.0
 one_shot = true
+
+[node name="HUD" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_rb8ji")
+player_node = NodePath("..")
+
+[node name="MessageBox" type="RichTextLabel" parent="HUD"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+theme_override_font_sizes/normal_font_size = 12
+bbcode_enabled = true
+text = "Welcome to OniGokko3D
+"
+scroll_following = true
+
+[node name="EnergyBar" type="TextureProgressBar" parent="HUD"]
+visible = false
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -30.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+value = 100.0
+fill_mode = 6
+nine_patch_stretch = true
+texture_progress = ExtResource("5_gyhn1")
 
 [connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]
 [connection signal="timeout" from="ImmuneTimer" to="." method="_on_immune_timer_timeout"]

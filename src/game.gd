@@ -5,7 +5,9 @@ class_name Game
 @onready var player_nodes : Node = $Players
 @onready var spawner := $MultiplayerSpawner
 @onready var timer := $Timer
-@onready var hud = $HUD
+@onready var server_messages := $ServerMessages
+
+signal game_announcement(message : String)
 
 # Server only varaibles
 var sv_stopped = true
@@ -14,12 +16,19 @@ var demon_id = 0 # Peer that is the demon
 var spawn_points : Array[Node]
 var spawn_point_index = 0
 
+# This is called before anyone even connects!
 func _ready() -> void:
 	spawn_points = get_tree().get_nodes_in_group("spawnpoint")
 	spawner.spawn_function = spawn_player
 	
 	Network.player_connected.connect(on_player_connected)
 	Network.player_disconnected.connect(on_player_disconnected)
+	Network.server_created.connect(on_server_created)
+
+
+func on_server_created():
+	server_messages.show()
+	game_announcement.connect(on_game_announcement)
 
 
 # Callback from Network when a player is fully registered
@@ -47,7 +56,7 @@ func add_player(id):
 	# Start the game if there are enough players
 	if multiplayer.get_peers().size() > 1 and sv_stopped:
 		sv_stopped = false
-		begin_round.rpc()
+		start_round.rpc()
 
 
 func get_spawn_point() -> Vector3:
@@ -76,21 +85,19 @@ func remove_player(id):
 
 @rpc("authority", "call_local", "reliable")
 func end_round():
-	hud.show_message("Round Ended!")
 	if multiplayer.is_server():
-		
+		game_announcement.emit("Round Ended")
 		await get_tree().create_timer(10).timeout
 		if multiplayer.get_peers().size() > 1:
-			begin_round.rpc()
+			start_round.rpc()
 		else:
-			hud.show_message("Not enough players.")
+			game_announcement.emit("Not enough players.")
 			sv_stopped = true
 
 
 @rpc("authority", "call_local", "reliable")
-func begin_round():
-	hud.show()
-	hud.show_message("Round started!")
+func start_round():
+	game_announcement.emit("Round Started")
 	
 	if multiplayer.is_server():
 		demon_id = Network.players.keys().pick_random()
@@ -125,7 +132,7 @@ func sync_make_demon(new_id):
 			demon_name = Network.players[demon_id].name
 			demon_color = Network.players[demon_id].color
 			
-		hud.show_message("[color=%s]%s[/color] is the DEMON!" % [demon_color.to_html(false),demon_name])
+		game_announcement.emit("[color=%s]%s[/color] is the DEMON!" % [demon_color.to_html(false),demon_name])
 
 
 @rpc("any_peer", "call_remote", "reliable")
@@ -151,3 +158,6 @@ func _on_multiplayer_spawner_spawned(node: Node) -> void:
 	var player = node as Player
 	if Network.players.has(player.peer_id):
 		player._player_info = Network.players[player.peer_id]
+
+func on_game_announcement(message : String):
+	server_messages.append_text(message + "\n")

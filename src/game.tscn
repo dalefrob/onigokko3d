@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://de87htjmchopr"]
+[gd_scene load_steps=8 format=3 uid="uid://de87htjmchopr"]
 
 [ext_resource type="Script" path="res://src/game.gd" id="1_14ux5"]
 [ext_resource type="Material" uid="uid://bu1ctyi2eymmv" path="res://materials/floor_material.tres" id="1_bsk1b"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://brvla8l7lphvg" path="res://src/player.tscn" id="2_tnhop"]
 [ext_resource type="PackedScene" uid="uid://bw3udoe1p7i8g" path="res://src/lobby_ui.tscn" id="5_w1374"]
 [ext_resource type="Texture2D" uid="uid://6hf187xnu8oa" path="res://sprites/hhouse_walllamp.png" id="5_wlqis"]
-[ext_resource type="Script" path="res://src/hud.gd" id="6_ohvh3"]
 
 [sub_resource type="Environment" id="Environment_uqe0p"]
 ambient_light_source = 2
@@ -133,23 +132,14 @@ environment = SubResource("Environment_uqe0p")
 
 [node name="Lobby" parent="." instance=ExtResource("5_w1374")]
 
-[node name="HUD" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 10
-anchor_right = 1.0
-grow_horizontal = 2
-script = ExtResource("6_ohvh3")
-
-[node name="MessageBox" type="RichTextLabel" parent="HUD"]
+[node name="ServerMessages" type="RichTextLabel" parent="."]
+visible = false
 custom_minimum_size = Vector2(0, 64)
-layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 grow_horizontal = 2
-theme_override_font_sizes/normal_font_size = 12
+size_flags_horizontal = 4
 bbcode_enabled = true
-text = "Welcome to OniGokko3D
-"
 scroll_following = true
 
 [connection signal="despawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_despawned"]
