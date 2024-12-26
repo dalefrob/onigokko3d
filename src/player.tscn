@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=3 uid="uid://brvla8l7lphvg"]
 
-[ext_resource type="Texture2D" uid="uid://ykuvpgr15svx" path="res://onigokko.png" id="1_mto3x"]
-[ext_resource type="Script" path="res://player.gd" id="1_nok4e"]
-[ext_resource type="PackedScene" uid="uid://0p1rk8ig07os" path="res://demon_tongue.tscn" id="3_qta7u"]
+[ext_resource type="Texture2D" uid="uid://ykuvpgr15svx" path="res://sprites/onigokko.png" id="1_mto3x"]
+[ext_resource type="Script" path="res://src/player.gd" id="1_nok4e"]
+[ext_resource type="PackedScene" uid="uid://0p1rk8ig07os" path="res://src/demon_tongue.tscn" id="3_qta7u"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_pmav3"]
 radius = 0.3

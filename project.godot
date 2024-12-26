@@ -11,13 +11,13 @@ config_version=5
 [application]
 
 config/name="Onigokko3d"
-run/main_scene="res://game.tscn"
+run/main_scene="res://src/game.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
 
-Network="*res://network.gd"
+Network="*res://src/network.gd"
 
 [display]
 

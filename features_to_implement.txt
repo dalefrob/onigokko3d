@@ -1,0 +1,11 @@
+Demon -
+Ability to go through walls, jump high, leave a sticky trap
+Runner -
+Ability to sprint
+
+World -
+Multiple heights
+More levels to choose from
+
+GFX -
+Simple 3d models for players and demon
