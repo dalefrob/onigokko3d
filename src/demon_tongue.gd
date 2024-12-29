@@ -42,9 +42,6 @@ func _ready() -> void:
 
 
 func shoot():
-	# Don't shoot unless tongue is in
-	if current_state != STATE_IDLE:
-		return
 	_tongue_extension_vector = Vector3(0, 0, tongue_length)
 	change_state(STATE_EXTEND)
 

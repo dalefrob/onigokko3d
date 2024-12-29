@@ -30,6 +30,10 @@ var costume : CostumeResource:
 
 # Children nodes
 @onready var sprite : Sprite3D = $Sprite3D
+
+@onready var player_skin = $PlayerSkin
+@onready var demon_skin = $DemonSkin
+
 @onready var head : Node3D = $Head
 @onready var camera : Camera3D = $Head/Camera3D
 @onready var namelabel : Label3D = $Label3D
@@ -44,6 +48,8 @@ var costume : CostumeResource:
 var energy = 100.0
 var speed = 5.0
 var jump_velocity = 4.5
+
+@export var current_anim = "Idle"
 
 # Attributes
 @export var tag_immune = false:
@@ -64,6 +70,10 @@ var jump_velocity = 4.5
 func _setup_runner():
 	if is_multiplayer_authority():
 		hud.energy_bar.show()
+		
+	demon_skin.hide()
+	player_skin.show()
+	
 	namelabel.show()
 	namelabel.text = _player_info.name
 	namelabel.modulate = Color.WHITE
@@ -71,6 +81,9 @@ func _setup_runner():
 
 
 func _setup_demon():
+	demon_skin.show()
+	player_skin.hide()
+	
 	hud.energy_bar.hide()
 	namelabel.hide()
 	sprite.modulate = Color.WHITE
@@ -82,6 +95,9 @@ func _ready() -> void:
 	if is_multiplayer_authority():
 		_game_ref.game_announcement.connect(on_game_announcement)
 		hud.show()
+		# Hide local models
+		player_skin.hide_local_models()
+		demon_skin.hide_local_models()
 		camera.make_current()
 	
 	_setup_runner()
@@ -94,12 +110,35 @@ func on_game_announcement(message : String):
 #endregion
 
 
+func _input(event: InputEvent) -> void:
+	if !is_multiplayer_authority():
+		return
+	
+	# ESC
+	var key_event = event as InputEventKey
+	if key_event:
+		if key_event.keycode == KEY_ESCAPE:
+			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	
+	# Click events
+	var click_event = event as InputEventMouseButton
+	if click_event:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	
+	# Motion
+	var motion_event = event as InputEventMouseMotion
+	if motion_event:
+		rotate_y(-motion_event.relative.x * 0.003)
+
+
+
 func _process(delta: float) -> void:
 	# Update the sprites of all the other players
 	update_sprite()
 
 
 func _physics_process(delta: float) -> void:
+	player_skin.animation_player.play(current_anim)
 	if !is_multiplayer_authority():
 		interpolate_movement(delta)
 		return
@@ -127,7 +166,7 @@ func _physics_process(delta: float) -> void:
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var input_dir := Input.get_vector("strafe_left", "strafe_right", "move_forward", "move_backward")
-	var direction := (head.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
 		velocity.x = direction.x * speed
 		velocity.z = direction.z * speed
@@ -136,19 +175,25 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, speed)
 
 	move_and_slide()
+	
+	if velocity.length() > 0:
+		current_anim = "Run"
+	else:
+		current_anim = "Idle"
+	
 	# Update sync values to send
 	sync_position = position
-	sync_rotation = head.rotation
+	sync_rotation = rotation
 
 
 # Move towards the last position
 func interpolate_movement(delta : float):
 	position = position.move_toward(sync_position, delta * speed * 2)
-	var hrot : Vector3 = head.rotation
+	var hrot : Vector3 = rotation
 	hrot.y = lerp_angle(hrot.y, sync_rotation.y, delta * speed * 2)
 	hrot.x = sync_rotation.x
 	hrot.z = sync_rotation.z
-	head.rotation = hrot
+	rotation = hrot
 
 
 @rpc("authority", "call_local", "unreliable")
@@ -159,34 +204,13 @@ func jump():
 @rpc("authority", "call_local", "reliable")
 func shoot():
 	if demon:
-		demon_tongue.shoot()
+		demon_skin.attack()
 
 
 func sprint():
 	if energy > 0:
 		energy -= 1
 		speed = MAX_SPRINT_SPEED
-
-
-func _input(event: InputEvent) -> void:
-	if !is_multiplayer_authority():
-		return
-	
-	# ESC
-	var key_event = event as InputEventKey
-	if key_event:
-		if key_event.keycode == KEY_ESCAPE:
-			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	
-	# Click events
-	var click_event = event as InputEventMouseButton
-	if click_event:
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	
-	# Motion
-	var motion_event = event as InputEventMouseMotion
-	if motion_event:
-		head.rotate_y(-motion_event.relative.x * 0.003)
 
 
 func update_sprite():

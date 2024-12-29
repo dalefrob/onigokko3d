@@ -1,0 +1,90 @@
+[gd_scene load_steps=8 format=3 uid="uid://gary1616427p"]
+
+[ext_resource type="PackedScene" uid="uid://qv46i40id1wy" path="res://models/ghosthead2.gltf" id="1_eawqv"]
+[ext_resource type="Script" path="res://src/demon_ghost.gd" id="2_4p8vh"]
+[ext_resource type="Texture2D" uid="uid://c4p1l8n3kmrku" path="res://sprites/glow.png" id="2_kq7tb"]
+[ext_resource type="PackedScene" uid="uid://0p1rk8ig07os" path="res://src/demon_tongue.tscn" id="4_w76eh"]
+
+[sub_resource type="Animation" id="Animation_egny3"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("DemonTongue:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "blend_shape"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Head:Angry")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = PackedFloat32Array(0, 1, 0)
+
+[sub_resource type="Animation" id="Animation_6mc6m"]
+resource_name = "attack"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("DemonTongue:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.8, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [false, true, true, false]
+}
+tracks/1/type = "blend_shape"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Head:Angry")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = PackedFloat32Array(0, 1, 0, 0.2, 1, 1, 0.833333, 1, 1, 1, 1, 0)
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("DemonTongue")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.2),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"shoot"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_fwxje"]
+_data = {
+"RESET": SubResource("Animation_egny3"),
+"attack": SubResource("Animation_6mc6m")
+}
+
+[node name="Ghost" instance=ExtResource("1_eawqv")]
+script = ExtResource("2_4p8vh")
+
+[node name="RightEye" type="Sprite3D" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.188589, 0.0655402, -0.437317)
+texture = ExtResource("2_kq7tb")
+
+[node name="LeftEye" type="Sprite3D" parent="." index="4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.198738, 0.0728042, -0.436592)
+texture = ExtResource("2_kq7tb")
+
+[node name="DemonTongue" parent="." index="5" instance=ExtResource("4_w76eh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.340624, -0.304324)
+visible = false
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="6"]
+libraries = {
+"": SubResource("AnimationLibrary_fwxje")
+}

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://de87htjmchopr"]
+[gd_scene load_steps=8 format=3 uid="uid://de87htjmchopr"]
 
 [ext_resource type="Script" path="res://src/game.gd" id="1_14ux5"]
 [ext_resource type="Material" uid="uid://bu1ctyi2eymmv" path="res://materials/floor_material.tres" id="1_bsk1b"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://brvla8l7lphvg" path="res://src/player.tscn" id="2_tnhop"]
 [ext_resource type="PackedScene" uid="uid://bw3udoe1p7i8g" path="res://src/lobby_ui.tscn" id="5_w1374"]
 [ext_resource type="Texture2D" uid="uid://6hf187xnu8oa" path="res://sprites/hhouse_walllamp.png" id="5_wlqis"]
-[ext_resource type="PackedScene" uid="uid://dx46ubv68mc3f" path="res://ghosthead_2.tscn" id="7_1bjoq"]
 
 [sub_resource type="Environment" id="Environment_uqe0p"]
 ambient_light_source = 2
@@ -142,9 +141,6 @@ grow_horizontal = 2
 size_flags_horizontal = 4
 bbcode_enabled = true
 scroll_following = true
-
-[node name="ghosthead2" parent="." instance=ExtResource("7_1bjoq")]
-transform = Transform3D(0.760032, 0, -0.649886, 0, 1, 0, 0.649886, 0, 0.760032, 3.02981, 0.367682, -4.78876)
 
 [connection signal="despawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_despawned"]
 [connection signal="spawned" from="MultiplayerSpawner" to="." method="_on_multiplayer_spawner_spawned"]

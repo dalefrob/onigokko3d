@@ -117,9 +117,10 @@ func sync_teleport_player(id, pos):
 func sync_make_demon(new_id):
 	# De-demonify the current demon
 	if demon_id > 0:
-		var old_demon = player_nodes.get_node(str(demon_id))
-		old_demon.demon = false
-		old_demon.tag_immune = true
+		var old_demon = player_nodes.get_node_or_null(str(demon_id))
+		if old_demon:
+			old_demon.demon = false
+			old_demon.tag_immune = true
 	# Set the new demon
 	var new_demon = player_nodes.get_node(str(new_id))
 	if new_demon:

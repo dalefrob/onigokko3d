@@ -1,13 +1,18 @@
-[gd_scene load_steps=9 format=3 uid="uid://brvla8l7lphvg"]
+[gd_scene load_steps=13 format=3 uid="uid://brvla8l7lphvg"]
 
 [ext_resource type="Script" path="res://src/player.gd" id="1_nok4e"]
+[ext_resource type="PackedScene" uid="uid://c8uckcskeqbyx" path="res://src/player_skin.tscn" id="2_qvxnb"]
+[ext_resource type="PackedScene" uid="uid://gary1616427p" path="res://src/ghost.tscn" id="2_r4jjo"]
 [ext_resource type="Texture2D" uid="uid://b0ul0p6spa5kw" path="res://sprites/runner.png" id="2_yy6vk"]
 [ext_resource type="PackedScene" uid="uid://0p1rk8ig07os" path="res://src/demon_tongue.tscn" id="3_qta7u"]
 [ext_resource type="Script" path="res://src/hud.gd" id="4_rb8ji"]
 [ext_resource type="Texture2D" uid="uid://bure181a2qul8" path="res://sprites/staminabar.png" id="5_gyhn1"]
+[ext_resource type="Script" path="res://src/fsm/StateMachine.gd" id="7_dcl78"]
+[ext_resource type="Script" path="res://src/fsm/state_runner.gd" id="8_ruvw6"]
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_pmav3"]
-radius = 0.3
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_yt005"]
+radius = 0.25
+height = 1.0
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_hnf36"]
 properties/0/path = NodePath(".:demon")
@@ -22,6 +27,9 @@ properties/2/replication_mode = 1
 properties/3/path = NodePath(".:sync_rotation")
 properties/3/spawn = true
 properties/3/replication_mode = 1
+properties/4/path = NodePath(".:current_anim")
+properties/4/spawn = true
+properties/4/replication_mode = 2
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_qs1ue"]
 size = Vector3(0.5, 0.5, 0.5)
@@ -30,7 +38,15 @@ size = Vector3(0.5, 0.5, 0.5)
 collision_layer = 2
 script = ExtResource("1_nok4e")
 
+[node name="DemonSkin" parent="." instance=ExtResource("2_r4jjo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+visible = false
+
+[node name="PlayerSkin" parent="." instance=ExtResource("2_qvxnb")]
+visible = false
+
 [node name="Sprite3D" type="Sprite3D" parent="."]
+visible = false
 pixel_size = 0.04
 billboard = 2
 shaded = true
@@ -40,17 +56,15 @@ region_enabled = true
 region_rect = Rect2(0, 0, 16, 16)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00333649, -0.00330316, 0.000716925)
-shape = SubResource("SphereShape3D_pmav3")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.51363, 0)
+shape = SubResource("CapsuleShape3D_yt005")
 
 [node name="Head" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.941727, 0)
 
 [node name="Camera3D" type="Camera3D" parent="Head"]
-
-[node name="Torchlight" type="SpotLight3D" parent="Head"]
-transform = Transform3D(1, 0, 0, 0, 0.996195, 0.0871557, 0, -0.0871557, 0.996195, 0, 0, 0)
-spot_angle = 20.0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000842333, 0.2, 0.0103636)
+near = 0.1
 
 [node name="DemonTongue" parent="Head" instance=ExtResource("3_qta7u")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
@@ -60,7 +74,7 @@ visible = false
 replication_config = SubResource("SceneReplicationConfig_hnf36")
 
 [node name="Label3D" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 sorting_offset = 1.0
 billboard = 2
 text = "Name"
@@ -116,6 +130,13 @@ value = 100.0
 fill_mode = 6
 nine_patch_stretch = true
 texture_progress = ExtResource("5_gyhn1")
+
+[node name="StateMachine" type="Node" parent="." node_paths=PackedStringArray("initial_state")]
+script = ExtResource("7_dcl78")
+initial_state = NodePath("StateRunner")
+
+[node name="StateRunner" type="Node" parent="StateMachine"]
+script = ExtResource("8_ruvw6")
 
 [connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]
 [connection signal="timeout" from="ImmuneTimer" to="." method="_on_immune_timer_timeout"]
