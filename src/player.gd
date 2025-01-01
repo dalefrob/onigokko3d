@@ -138,7 +138,8 @@ func _process(delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
-	player_skin.animation_player.play(current_anim)
+	player_skin.animation_player.play(current_anim, 0.5)
+	
 	if !is_multiplayer_authority():
 		interpolate_movement(delta)
 		return
@@ -176,10 +177,14 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 	
-	if velocity.length() > 0:
-		current_anim = "Run"
+	if is_on_floor():
+		if velocity.length() > 0:
+			current_anim = "Run"
+		else:
+			current_anim = "Idle"
 	else:
-		current_anim = "Idle"
+		if velocity.y < 0:
+			current_anim = "Fall"
 	
 	# Update sync values to send
 	sync_position = position
@@ -199,6 +204,7 @@ func interpolate_movement(delta : float):
 @rpc("authority", "call_local", "unreliable")
 func jump():
 	velocity.y = jump_velocity
+	current_anim = "Jump"
 
 
 @rpc("authority", "call_local", "reliable")

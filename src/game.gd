@@ -45,6 +45,7 @@ func on_player_disconnected(peer_id):
 
 # Called from server to add a player, which then spawns it in via the replicator
 func add_player(id):
+	print("Server: Adding player (%s)" % id)
 	var new_player = spawner.spawn(
 		{
 			"id": id,
@@ -97,12 +98,12 @@ func end_round():
 
 @rpc("authority", "call_local", "reliable")
 func start_round():
-	game_announcement.emit("Round Started")
-	
 	if multiplayer.is_server():
+		print("Server: Starting Round")
 		demon_id = Network.players.keys().pick_random()
 		sync_make_demon.rpc(demon_id)
-		
+	
+	game_announcement.emit("Round Started")
 	timer.start(60)
 
 
@@ -159,6 +160,7 @@ func _on_multiplayer_spawner_spawned(node: Node) -> void:
 	var player = node as Player
 	if Network.players.has(player.peer_id):
 		player._player_info = Network.players[player.peer_id]
+
 
 func on_game_announcement(message : String):
 	server_messages.append_text(message + "\n")

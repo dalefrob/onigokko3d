@@ -80,6 +80,7 @@ func _on_hitbox_body_entered(body: Node3D) -> void:
 	var player = body as Player
 	# Cancel conditions
 	if !player: return
+	if player.get_multiplayer_authority() == get_multiplayer_authority(): return # Own demon tongue
 	if player.demon: return
 	if player.tag_immune: return
 	# Visual cue for success
